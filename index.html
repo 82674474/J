@@ -412,6 +412,7 @@
             margin-top: 20px;
             font-size: 20px;
             text-align: center;
+            cursor: pointer;
         }
 
         /* 错误消息样式 */
@@ -463,7 +464,7 @@
     <div id="mainContainer" class="container" style="display: none;">
         <div class="header">
             <h1>WeChat照片分享</h1>
-            <p>长按保存或扫码</p>
+            <p>长按扫码或点击名称下载</p>
         </div>
 
         <!-- 加载动画和图片展示容器 -->
@@ -535,10 +536,14 @@
                 loading.innerHTML = '';
                 loading.className = 'image-container'; // 替换为图片展示容器样式
                 
-                // 创建图片标题
-                const title = document.createElement('div');
+                // 创建图片标题（可点击下载）
+                const title = document.createElement('a');
                 title.className = 'image-title';
-                title.textContent = imageName; // 使用图片文件名
+                title.textContent = imageName;
+                title.href = imageName;
+                title.download = imageName;
+                title.style.textDecoration = 'none';
+                title.style.color = 'white';
                 
                 // 添加图片和标题到容器
                 loading.appendChild(img);
