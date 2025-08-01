@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WeChat照片分享</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        /* 密码覆盖层样式 */
+        .password-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .password-dialog {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .password-dialog h3 {
+            margin-bottom: 25px;
+            color: #333;
+            font-size: 20px;
+        }
+
+        .password-dialog input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            transition: border-color 0.3s ease;
+        }
+
+        .password-dialog input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .password-dialog button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .password-dialog button:hover {
+            transform: translateY(-2px);
+        }
+
+        .password-error {
+            color: #ff4757;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        /* 主容器样式 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 28px;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 16px;
+        }
+
+        /* 加载动画样式 - 使用提供的样式 */
+        .loading {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 400px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* 从Uiverse.io by alexruix */ 
+        .loader {
+          width: 112px;
+          height: 112px;
+          position: relative;
+        }
+
+        .box1,
+        .box2,
+        .box3 {
+          border: 16px solid rgba(255, 255, 255, 0.3);
+          box-sizing: border-box;
+          position: absolute;
+          display: block;
+          border-radius: 8px;
+        }
+
+        .box1 {
+          width: 112px;
+          height: 48px;
+          margin-top: 64px;
+          margin-left: 0px;
+          animation: abox1 4s 1s forwards ease-in-out infinite;
+        }
+
+        .box2 {
+          width: 48px;
+          height: 48px;
+          margin-top: 0px;
+          margin-left: 0px;
+          animation: abox2 4s 1s forwards ease-in-out infinite;
+        }
+
+        .box3 {
+          width: 48px;
+          height: 48px;
+          margin-top: 0px;
+          margin-left: 64px;
+          animation: abox3 4s 1s forwards ease-in-out infinite;
+        }
+
+        @keyframes abox1 {
+          0% {
+            width: 112px;
+            height: 48px;
+            margin-top: 64px;
+            margin-left: 0px;
+          }
+
+          12.5% {
+            width: 48px;
+            height: 48px;
+            margin-top: 64px;
+            margin-left: 0px;
+          }
+
+          25% {
+            width: 48px;
+            height: 48px;
+            margin-top: 64px;
+            margin-left: 0px;
+          }
+
+          37.5% {
+            width: 48px;
+            height: 48px;
+            margin-top: 64px;
+            margin-left: 0px;
+          }
+
+          50% {
+            width: 48px;
+            height: 48px;
+            margin-top: 64px;
+            margin-left: 0px;
+          }
+
+          62.5% {
+            width: 48px;
+            height: 48px;
+            margin-top: 64px;
+            margin-left: 0px;
+          }
+
+          75% {
+            width: 48px;
+            height: 112px;
+            margin-top: 0px;
+            margin-left: 0px;
+          }
+
+          87.5% {
+            width: 48px;
+            height: 48px;
+            margin-top: 0px;
+            margin-left: 0px;
+          }
+
+          100% {
+            width: 48px;
+            height: 48px;
+            margin-top: 0px;
+            margin-left: 0px;
+          }
+        }
+
+        @keyframes abox2 {
+          0% {
+            width: 48px;
+            height: 48px;
+            margin-top: 0px;
+            margin-left: 0px;
+          }
+
+          12.5% {
+            width: 48px;
+            height: 48px;
+            margin-top: 0px;
+            margin-left: 0px;
+          }
+
+          25% {
+            width: 48px;
+            height: 48px;
+            margin-top: 0px;
+            margin-left: 0px;
+          }
+
+          37.5% {
+            width: 48px;
+            height: 48px;
+            margin-top: 0px;
+            margin-left: 0px;
+          }
+
+          50% {
+            width: 112px;
+            height: 48px;
+            margin-top: 0px;
+            margin-left: 0px;
+          }
+
+          62.5% {
+            width: 48px;
+            height: 48px;
+            margin-top: 0px;
+            margin-left: 64px;
+          }
+
+          75% {
+            width: 48px;
+            height: 48px;
+            margin-top: 0px;
+            margin-left: 64px;
+          }
+
+          87.5% {
+            width: 48px;
+            height: 48px;
+            margin-top: 0px;
+            margin-left: 64px;
+          }
+
+          100% {
+            width: 48px;
+            height: 48px;
+            margin-top: 0px;
+            margin-left: 64px;
+          }
+        }
+
+        @keyframes abox3 {
+          0% {
+            width: 48px;
+            height: 48px;
+            margin-top: 0px;
+            margin-left: 64px;
+          }
+
+          12.5% {
+            width: 48px;
+            height: 48px;
+            margin-top: 0px;
+            margin-left: 64px;
+          }
+
+          25% {
+            width: 48px;
+            height: 112px;
+            margin-top: 0px;
+            margin-left: 64px;
+          }
+
+          37.5% {
+            width: 48px;
+            height: 48px;
+            margin-top: 64px;
+            margin-left: 64px;
+          }
+
+          50% {
+            width: 48px;
+            height: 48px;
+            margin-top: 64px;
+            margin-left: 64px;
+          }
+
+          62.5% {
+            width: 48px;
+            height: 48px;
+            margin-top: 64px;
+            margin-left: 64px;
+          }
+
+          75% {
+            width: 48px;
+            height: 48px;
+            margin-top: 64px;
+            margin-left: 64px;
+          }
+
+          87.5% {
+            width: 48px;
+            height: 48px;
+            margin-top: 64px;
+            margin-left: 64px;
+          }
+
+          100% {
+            width: 112px;
+            height: 48px;
+            margin-top: 64px;
+            margin-left: 0px;
+          }
+        }
+
+        .loading-text {
+            color: white;
+            font-size: 18px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 0.7;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+
+        /* 图片展示容器 */
+        .image-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            padding: 20px;
+        }
+        
+        .image-container img {
+            max-width: 100%;
+            max-height: 80vh;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            object-fit: contain;
+        }
+        
+        .image-title {
+            color: white;
+            margin-top: 20px;
+            font-size: 20px;
+            text-align: center;
+        }
+
+        /* 错误消息样式 */
+        .error-msg {
+            text-align: center;
+            color: white;
+            font-size: 18px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .password-dialog {
+                padding: 30px 20px;
+            }
+            
+            .image-container img {
+                max-height: 65vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 密码覆盖层 -->
+    <div id="passwordOverlay" class="password-overlay">
+        <div class="password-dialog">
+            <h3>🔐 请输入访问密码</h3>
+            <div>
+                <input type="password" id="passwordInput" placeholder="请输入密码">
+                <button onclick="checkPassword()">确认</button>
+            </div>
+            <div id="passwordError" class="password-error"></div>
+        </div>
+    </div>
+
+    <!-- 主容器 -->
+    <div id="mainContainer" class="container" style="display: none;">
+        <div class="header">
+            <h1>WeChat照片分享</h1>
+            <p>长按保存或扫码</p>
+        </div>
+
+        <!-- 加载动画和图片展示容器 -->
+        <div id="loading" class="loading">
+            <div class="loader">
+                <div class="box1"></div>
+                <div class="box2"></div>
+                <div class="box3"></div>
+            </div>
+            <div class="loading-text">正在加载照片...</div>
+        </div>
+
+        <!-- 错误消息 -->
+        <div id="error" class="error-msg" style="display: none;">
+            暂时没有找到照片文件
+        </div>
+    </div>
+
+    <script>
+        // 密码验证（使用当前年月日时）
+        function checkPassword() {
+            const password = document.getElementById('passwordInput').value;
+            const errorDiv = document.getElementById('passwordError');
+            
+            // 获取当前时间并格式化为YYYYMMDDHH
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const correctPassword = `${year}${month}${day}${hours}`;
+            
+            if (password === correctPassword) {
+                document.getElementById('passwordOverlay').style.display = 'none';
+                document.getElementById('mainContainer').style.display = 'block';
+                loadPhoto();
+            } else {
+                errorDiv.textContent = '密码错误，请重试';
+                document.getElementById('passwordInput').value = '';
+            }
+        }
+
+        // 回车键提交密码
+        document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkPassword();
+            }
+        });
+
+        // 加载照片
+        function loadPhoto() {
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            
+            // 图片文件名
+            const imageName = 'WeChat.png';
+            
+            // 创建图片对象
+            const img = new Image();
+            img.src = imageName;
+            img.alt = imageName;
+            
+            // 图片加载成功
+            img.onload = function() {
+                // 清除加载动画
+                loading.innerHTML = '';
+                loading.className = 'image-container'; // 替换为图片展示容器样式
+                
+                // 创建图片标题
+                const title = document.createElement('div');
+                title.className = 'image-title';
+                title.textContent = imageName; // 使用图片文件名
+                
+                // 添加图片和标题到容器
+                loading.appendChild(img);
+                loading.appendChild(title);
+            };
+            
+            // 图片加载失败
+            img.onerror = function() {
+                loading.style.display = 'none';
+                error.style.display = 'block';
+            };
+        }
+
+        // 防止右键保存图片（可选）
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
+    </script>
+</body>
+</html>
