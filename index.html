@@ -13,9 +13,23 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
             min-height: 100vh;
             color: #333;
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
         }
 
         /* 密码覆盖层样式 */
@@ -379,7 +393,6 @@
             font-size: 18px;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
             animation: pulse 2s ease-in-out infinite;
-            margin-top: 40px;
         }
 
         @keyframes pulse {
