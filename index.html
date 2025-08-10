@@ -13,54 +13,43 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-            /* 主背景：多色渐变动画 */
-            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-            background-size: 400% 400%;
-            animation: randomGradientMove 20s ease-in-out infinite;
+            background: #0a0a0a;
             min-height: 100vh;
             color: #333;
+            position: relative;
             overflow-x: hidden;
         }
 
-        /* 主背景渐变动画 - 随机移动效果 */
-        @keyframes randomGradientMove {
-            0% { background-position: 0% 50%; }
-            10% { background-position: 80% 10%; }
-            20% { background-position: 40% 80%; }
-            30% { background-position: 90% 40%; }
-            40% { background-position: 20% 90%; }
-            50% { background-position: 70% 20%; }
-            60% { background-position: 10% 70%; }
-            70% { background-position: 85% 85%; }
-            80% { background-position: 30% 15%; }
-            90% { background-position: 60% 95%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* 第二层动态背景 - 浮动光圈效果 */
         body::before {
             content: '';
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 25% 25%, rgba(238, 119, 82, 0.3) 0%, transparent 70%),
-                        radial-gradient(circle at 75% 75%, rgba(35, 166, 213, 0.3) 0%, transparent 70%),
-                        radial-gradient(circle at 50% 10%, rgba(231, 60, 126, 0.2) 0%, transparent 60%),
-                        radial-gradient(circle at 80% 50%, rgba(35, 213, 171, 0.2) 0%, transparent 60%);
-            animation: floatingCircles 25s linear infinite;
-            pointer-events: none;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, #ff6b6b, transparent 70%),
+                        radial-gradient(circle at 80% 20%, #4ecdc4, transparent 70%),
+                        radial-gradient(circle at 40% 80%, #45b7d1, transparent 70%),
+                        radial-gradient(circle at 90% 90%, #f9ca24, transparent 70%),
+                        radial-gradient(circle at 10% 10%, #6c5ce7, transparent 70%);
+            background-size: 200% 200%;
+            animation: gradientShift 8s ease-in-out infinite;
             z-index: -1;
         }
 
-        /* 浮动光圈动画 */
-        @keyframes floatingCircles {
-            0% { transform: translate(0, 0) rotate(0deg); }
-            25% { transform: translate(-20px, -30px) rotate(90deg); }
-            50% { transform: translate(30px, -10px) rotate(180deg); }
-            75% { transform: translate(-10px, 20px) rotate(270deg); }
-            100% { transform: translate(0, 0) rotate(360deg); }
+        @keyframes gradientShift {
+            0%, 100% {
+                background-position: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+            }
+            25% {
+                background-position: 100% 0%, 0% 100%, 100% 100%, 0% 0%, 100% 0%;
+            }
+            50% {
+                background-position: 0% 100%, 100% 0%, 0% 0%, 100% 100%, 0% 100%;
+            }
+            75% {
+                background-position: 100% 100%, 0% 0%, 100% 0%, 0% 100%, 100% 100%;
+            }
         }
 
         /* 密码覆盖层样式 */
@@ -70,7 +59,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5); /* 第71行 - 背景透明度设置为50% */
+            background: rgba(0, 0, 0, 0.8);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -424,7 +413,6 @@
             font-size: 18px;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
             animation: pulse 2s ease-in-out infinite;
-            margin-top: 30px; /* 增加与加载动画的距离 */
         }
 
         @keyframes pulse {
